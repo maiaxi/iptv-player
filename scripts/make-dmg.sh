@@ -1,12 +1,13 @@
 #!/bin/zsh
-# Builds the app and packages it as build/IPTV-Player.dmg (drag-to-Applications installer).
+# Builds the app and packages it as build/IPTV-Player-<version>.dmg (drag-to-Applications
+# installer). Takes the same environment as build-app.sh (ARCHS, VERSION, BUILD_NUMBER).
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
 ./scripts/build-app.sh
 
-VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Resources/Info.plist)
+VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$ROOT/build/IPTV Player.app/Contents/Info.plist")
 STAGING="$ROOT/build/dmg"
 DMG="$ROOT/build/IPTV-Player-$VERSION.dmg"
 
