@@ -17,7 +17,7 @@ struct SeriesDetailView: View {
                 if let info {
                     episodesSection(info)
                 } else if let error {
-                    ContentUnavailableView("Não foi possível carregar a série", systemImage: "exclamationmark.triangle",
+                    ContentUnavailableView("Couldn’t Load the Series", systemImage: "exclamationmark.triangle",
                                            description: Text(error))
                 } else {
                     ProgressView().frame(maxWidth: .infinity).padding(40)
@@ -77,7 +77,7 @@ struct SeriesDetailView: View {
                         Button {
                             if let first = episodes.first { play(first) }
                         } label: {
-                            Label("Reproduzir", systemImage: "play.fill").padding(.horizontal, 6)
+                            Label("Play", systemImage: "play.fill").padding(.horizontal, 6)
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
@@ -86,7 +86,7 @@ struct SeriesDetailView: View {
                         Button {
                             library.toggleFavorite(series)
                         } label: {
-                            Label(library.isFavorite(series) ? "Nos favoritos" : "Favorito",
+                            Label(library.isFavorite(series) ? LocalizedStringKey("In Favorites") : "Favorite",
                                   systemImage: library.isFavorite(series) ? "star.fill" : "star")
                         }
                         .controlSize(.large)
@@ -105,17 +105,17 @@ struct SeriesDetailView: View {
     private func episodesSection(_ info: SeriesInfo) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Episódios").font(.title2.weight(.bold))
+                Text("Episodes").font(.title2.weight(.bold))
                 Spacer()
                 if seasons.count > 1 {
-                    Picker("Temporada", selection: $season) {
-                        ForEach(seasons, id: \.self) { Text("Temporada \($0)").tag($0) }
+                    Picker("Season", selection: $season) {
+                        ForEach(seasons, id: \.self) { Text("Season \($0)").tag($0) }
                     }
                     .fixedSize()
                 }
             }
             if episodes.isEmpty {
-                Text("Esta série ainda não tem episódios disponíveis.").foregroundStyle(.secondary)
+                Text("This series has no episodes available yet.").foregroundStyle(.secondary)
             }
             LazyVStack(spacing: 6) {
                 ForEach(episodes) { episode in
@@ -139,7 +139,7 @@ struct SeriesDetailView: View {
     private func item(for episode: Episode) -> MediaItem {
         MediaItem(
             id: "\(series.id):ep:\(episode.id)",
-            name: "T\(episode.season):E\(episode.number) · \(episode.title)",
+            name: String(localized: "S\(episode.season):E\(episode.number) · \(episode.title)"),
             logo: series.logo,
             categoryID: series.categoryID,
             kind: .series,

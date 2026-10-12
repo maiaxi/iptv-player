@@ -6,6 +6,7 @@ A native IPTV player for macOS (SwiftUI + libmpv). Supports Xtream Codes account
 - Favorites and recently watched
 - What's on now for each channel, from the provider's XMLTV guide
 - Player with auto-hiding controls, full screen, channel list, audio and subtitle tracks
+- English and Portuguese, following the system language
 
 ## Install
 
@@ -44,6 +45,13 @@ builds only).
 | M | Mute |
 | + − | Volume |
 | L | Channel list |
+
+## Translations
+
+UI strings are written in English in the code. Translations live in
+`Resources/<language>.lproj/Localizable.strings` (keys are the English strings; `Int` interpolations
+become `%lld`, `String` ones `%@`) and are copied into the app by `build-app.sh`. To add a language,
+add a new `.lproj` and list it under `CFBundleLocalizations` in `Resources/Info.plist`.
 
 ## Notes
 

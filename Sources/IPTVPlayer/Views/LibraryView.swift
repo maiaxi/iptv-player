@@ -25,7 +25,7 @@ struct LibraryView: View {
                             .navigationDestination(for: MediaItem.self) { SeriesDetailView(series: $0) }
                     }
                 }
-                .searchable(text: $search, placement: .toolbar, prompt: "Pesquisar")
+                .searchable(text: $search, placement: .toolbar, prompt: "Search")
             }
         }
         .sheet(isPresented: $library.isAddingSource) {
@@ -56,7 +56,7 @@ private struct DebugAutoplay: ViewModifier {
     func body(content: Content) -> some View {
         content.task {
             guard let value = ProcessInfo.processInfo.environment["IPTV_AUTOPLAY"], let url = URL(string: value) else { return }
-            let item = MediaItem(id: "debug", name: "Teste", logo: nil, categoryID: "", kind: .live,
+            let item = MediaItem(id: "debug", name: "Test", logo: nil, categoryID: "", kind: .live,
                                  streamURL: url, xtreamID: nil, rating: nil)
             PlaybackLauncher.play(item, queue: [item], library: library, player: player, openWindow: openWindow)
         }
@@ -72,17 +72,17 @@ private struct SidebarView: View {
 
     var body: some View {
         List(selection: $selection) {
-            Section("Biblioteca") {
+            Section("Library") {
                 ForEach(ContentKind.allCases, id: \.self) { kind in
                     Label(kind.title, systemImage: kind.symbol)
                         .badge(library.count(for: kind))
                         .tag(SidebarItem.kind(kind))
                 }
             }
-            Section("Coleções") {
-                Label("Favoritos", systemImage: "star")
+            Section("Collections") {
+                Label("Favorites", systemImage: "star")
                     .tag(SidebarItem.favorites)
-                Label("Recentes", systemImage: "clock.arrow.circlepath")
+                Label("Recents", systemImage: "clock.arrow.circlepath")
                     .tag(SidebarItem.recents)
             }
         }
@@ -112,8 +112,8 @@ private struct SourceSwitcher: View {
                 }
             }
             Divider()
-            Button("Adicionar fonte…") { library.isAddingSource = true }
-            Button("Gerir fontes…") { managing = true }
+            Button("Add Source…") { library.isAddingSource = true }
+            Button("Manage Sources…") { managing = true }
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "antenna.radiowaves.left.and.right")
@@ -123,7 +123,7 @@ private struct SourceSwitcher: View {
                     .background(LinearGradient(colors: [.purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing),
                                 in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(library.selectedSource?.name ?? "Sem fonte")
+                    Text(library.selectedSource?.name ?? String(localized: "No source"))
                         .font(.callout.weight(.semibold))
                         .lineLimit(1)
                     Text(statusLine)
@@ -147,9 +147,9 @@ private struct SourceSwitcher: View {
     }
 
     private var statusLine: String {
-        if library.isLoading { return "A carregar…" }
+        if library.isLoading { return String(localized: "Loading…") }
         if let expires = library.library?.account?.expiresAt {
-            return "Expira a \(expires.formatted(date: .abbreviated, time: .omitted))"
+            return String(localized: "Expires \(expires.formatted(date: .abbreviated, time: .omitted))")
         }
         return library.selectedSource?.subtitle ?? ""
     }
@@ -167,9 +167,9 @@ private struct CategoryColumn: View {
         List(selection: Binding(get: { selection }, set: { selection = $0 ?? CategoryFilter.all })) {
             switch sidebar {
             case .kind(let kind):
-                row("Todos", systemImage: "square.grid.2x2", count: library.count(for: kind))
+                row(String(localized: "All"), systemImage: "square.grid.2x2", count: library.count(for: kind))
                     .tag(CategoryFilter.all)
-                Section("Categorias") {
+                Section("Categories") {
                     ForEach(filtered(library.categories(for: kind))) { category in
                         Text(category.name)
                             .lineLimit(1)
@@ -178,7 +178,7 @@ private struct CategoryColumn: View {
                     }
                 }
             case .favorites, .recents:
-                row("Todos", systemImage: "square.grid.2x2",
+                row(String(localized: "All"), systemImage: "square.grid.2x2",
                     count: library.items(for: sidebar, filter: CategoryFilter.all, search: "").count)
                     .tag(CategoryFilter.all)
                 ForEach(ContentKind.allCases, id: \.self) { kind in
@@ -190,7 +190,7 @@ private struct CategoryColumn: View {
         }
         .safeAreaInset(edge: .top) {
             if case .kind = sidebar {
-                TextField("Filtrar categorias", text: $query)
+                TextField("Filter categories", text: $query)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
@@ -202,8 +202,8 @@ private struct CategoryColumn: View {
     private var title: String {
         switch sidebar {
         case .kind(let kind): kind.title
-        case .favorites: "Favoritos"
-        case .recents: "Recentes"
+        case .favorites: String(localized: "Favorites")
+        case .recents: String(localized: "Recents")
         }
     }
 
@@ -233,9 +233,9 @@ private struct WelcomeView: View {
                             in: RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .shadow(color: .purple.opacity(0.35), radius: 24, y: 10)
             VStack(spacing: 8) {
-                Text("Bem-vindo ao IPTV Player")
+                Text("Welcome to IPTV Player")
                     .font(.largeTitle.weight(.bold))
-                Text("Adiciona uma lista M3U ou uma conta Xtream Codes para começares a ver TV, filmes e séries.")
+                Text("Add an M3U playlist or an Xtream Codes account to start watching TV, movies and series.")
                     .font(.title3)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -244,7 +244,7 @@ private struct WelcomeView: View {
             Button {
                 library.isAddingSource = true
             } label: {
-                Label("Adicionar fonte", systemImage: "plus")
+                Label("Add Source", systemImage: "plus")
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
             }

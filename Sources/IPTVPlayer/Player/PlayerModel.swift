@@ -138,7 +138,7 @@ final class PlayerModel {
                 }
             } else if let error {
                 isLoading = false
-                errorMessage = "Não foi possível reproduzir este conteúdo (\(error))."
+                errorMessage = String(localized: "This content couldn’t be played (\(error)).")
             } else if endOfFile, current?.kind == .series, let index = currentIndex, index + 1 < queue.count {
                 next()
             } else {
@@ -179,7 +179,7 @@ final class PlayerModel {
             let label = [title, lang.map { Locale.current.localizedString(forLanguageCode: $0) ?? $0 }]
                 .compactMap { $0 }
                 .joined(separator: " · ")
-            let track = Track(id: id, title: label.isEmpty ? "Faixa \(id)" : label)
+            let track = Track(id: id, title: label.isEmpty ? String(localized: "Track \(id)") : label)
             if type == "audio" { audio.append(track) }
             if type == "sub" { subs.append(track) }
         }

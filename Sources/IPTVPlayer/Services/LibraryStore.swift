@@ -138,13 +138,13 @@ final class LibraryStore {
                 req.setValue(PlayerDefaults.userAgent, forHTTPHeaderField: "User-Agent")
                 let (body, response) = try await URLSession.shared.data(for: req)
                 if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
-                    throw XtreamError(message: "Não foi possível descarregar a lista (erro \(http.statusCode)).")
+                    throw XtreamError(message: String(localized: "Couldn’t download the playlist (error \(http.statusCode))."))
                 }
                 data = body
             }
             let text = String(decoding: data, as: UTF8.self)
             guard text.contains("#EXTINF") || text.contains("://") else {
-                throw XtreamError(message: "O ficheiro não parece ser uma lista M3U.")
+                throw XtreamError(message: String(localized: "This file doesn’t look like an M3U playlist."))
             }
             return M3UParser.parse(text, sourceID: source.id)
         }

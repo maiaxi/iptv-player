@@ -5,9 +5,9 @@ enum ContentKind: String, Codable, CaseIterable, Hashable {
 
     var title: String {
         switch self {
-        case .live: "TV ao vivo"
-        case .movie: "Filmes"
-        case .series: "Séries"
+        case .live: String(localized: "Live TV")
+        case .movie: String(localized: "Movies")
+        case .series: String(localized: "Series")
         }
     }
 

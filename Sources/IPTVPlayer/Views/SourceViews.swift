@@ -6,7 +6,10 @@ struct SourceFormView: View {
     @Environment(\.dismiss) private var dismiss
     let source: Source?
 
-    private enum Mode: String, CaseIterable { case xtream = "Xtream Codes", m3u = "Lista M3U" }
+    private enum Mode: CaseIterable {
+        case xtream, m3u
+        var title: String { self == .xtream ? "Xtream Codes" : String(localized: "M3U Playlist") }
+    }
 
     @State private var mode: Mode = .xtream
     @State private var name = ""
@@ -21,41 +24,41 @@ struct SourceFormView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(source == nil ? "Adicionar fonte" : "Editar fonte").font(.title2.weight(.bold))
-                Text("Os dados ficam guardados apenas neste Mac.").foregroundStyle(.secondary)
+                Text(source == nil ? LocalizedStringKey("Add Source") : "Edit Source").font(.title2.weight(.bold))
+                Text("Your details are only stored on this Mac.").foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding([.horizontal, .top], 24)
 
             Form {
-                Picker("Tipo", selection: $mode) {
-                    ForEach(Mode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                Picker("Type", selection: $mode) {
+                    ForEach(Mode.allCases, id: \.self) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
 
                 Section {
-                    TextField("Nome", text: $name, prompt: Text(mode == .xtream ? "A minha TV" : "Lista"))
+                    TextField("Name", text: $name, prompt: Text(mode == .xtream ? LocalizedStringKey("My TV") : "Playlist"))
                 }
 
                 switch mode {
                 case .xtream:
                     Section {
-                        TextField("Servidor", text: $server, prompt: Text("http://servidor.com:8080"))
-                        TextField("Utilizador", text: $username)
+                        TextField("Server", text: $server, prompt: Text(verbatim: "http://server.com:8080"))
+                        TextField("Username", text: $username)
                         SecureField("Password", text: $password)
                     } footer: {
-                        Text("Os dados fornecidos pelo teu fornecedor de IPTV.")
+                        Text("The details from your IPTV provider.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 case .m3u:
                     Section {
                         HStack {
-                            TextField("Endereço", text: $m3uAddress, prompt: Text("https://… ou ficheiro local"))
-                            Button("Escolher…") { pickingFile = true }
+                            TextField("Address", text: $m3uAddress, prompt: Text("https://… or a local file"))
+                            Button("Choose…") { pickingFile = true }
                         }
                     } footer: {
-                        Text("Se a lista vier de um servidor Xtream (get.php?username=…), é convertida automaticamente para ter filmes, séries e guia de programação.")
+                        Text("If the playlist comes from an Xtream server (get.php?username=…), it’s converted automatically to get movies, series and the programme guide.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
@@ -71,12 +74,12 @@ struct SourceFormView: View {
             HStack {
                 if checking {
                     ProgressView().controlSize(.small)
-                    Text("A verificar…").foregroundStyle(.secondary)
+                    Text("Checking…").foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button("Cancelar", role: .cancel) { dismiss() }
+                Button("Cancel", role: .cancel) { dismiss() }
                     .keyboardShortcut(.cancelAction)
-                Button(source == nil ? "Adicionar" : "Guardar") { Task { await save() } }
+                Button(source == nil ? LocalizedStringKey("Add") : "Save") { Task { await save() } }
                     .keyboardShortcut(.defaultAction)
                     .disabled(!isValid || checking)
             }
@@ -126,7 +129,7 @@ struct SourceFormView: View {
             var address = server.trimmed
             if !address.contains("://") { address = "http://" + address }
             guard let url = URL(string: address), url.host() != nil else {
-                error = "O endereço do servidor não é válido."
+                error = String(localized: "The server address isn’t valid.")
                 return
             }
             kind = .xtream(server: url, username: username.trimmed, password: password)
@@ -148,7 +151,7 @@ struct SourceFormView: View {
 
         let fallbackName: String = switch kind {
         case .xtream(let server, _, _): server.host() ?? "IPTV"
-        case .m3u(let url): url.isFileURL ? url.deletingPathExtension().lastPathComponent : (url.host() ?? "Lista M3U")
+        case .m3u(let url): url.isFileURL ? url.deletingPathExtension().lastPathComponent : (url.host() ?? String(localized: "M3U Playlist"))
         }
         let finalName = name.trimmed.isEmpty ? fallbackName : name.trimmed
 
@@ -185,7 +188,7 @@ struct ManageSourcesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Fontes").font(.title2.weight(.bold)).padding(24)
+            Text("Sources").font(.title2.weight(.bold)).padding(24)
             List {
                 ForEach(library.sources) { source in
                     HStack(spacing: 12) {
@@ -199,29 +202,29 @@ struct ManageSourcesView: View {
                         Spacer()
                         Button { editing = source } label: { Image(systemName: "pencil") }
                             .buttonStyle(.borderless)
-                            .help("Editar")
+                            .help("Edit")
                         Button { deleting = source } label: { Image(systemName: "trash") }
                             .buttonStyle(.borderless)
-                            .help("Remover")
+                            .help("Remove")
                     }
                     .padding(.vertical, 4)
                 }
             }
             .frame(minHeight: 220)
             HStack {
-                Button("Adicionar fonte…") {
+                Button("Add Source…") {
                     dismiss()
                     library.isAddingSource = true
                 }
                 Spacer()
-                Button("Concluído") { dismiss() }.keyboardShortcut(.defaultAction)
+                Button("Done") { dismiss() }.keyboardShortcut(.defaultAction)
             }
             .padding(24)
         }
         .frame(width: 520)
         .sheet(item: $editing) { SourceFormView(source: $0) }
-        .confirmationDialog("Remover “\(deleting?.name ?? "")”?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })) {
-            Button("Remover", role: .destructive) {
+        .confirmationDialog("Remove “\(deleting?.name ?? "")”?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })) {
+            Button("Remove", role: .destructive) {
                 if let deleting { library.remove(deleting) }
             }
         }

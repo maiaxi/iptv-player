@@ -35,7 +35,7 @@ enum M3UParser {
                 }
             } else if !line.hasPrefix("#"), let url = URL(string: line) {
                 let info = pendingInfo ?? (name: url.lastPathComponent, attrs: [:])
-                let group = info.attrs["group-title"] ?? pendingGroup ?? "Sem categoria"
+                let group = info.attrs["group-title"] ?? pendingGroup ?? String(localized: "Uncategorized")
                 let kind = kindFor(url: url)
                 let categoryID = "\(kind.rawValue):\(group)"
                 if seenCategories.insert(categoryID).inserted {

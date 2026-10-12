@@ -84,15 +84,15 @@ struct PlayerView: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 40))
                     .foregroundStyle(.yellow)
-                Text("Sem sinal").font(.title2.weight(.semibold))
+                Text("No Signal").font(.title2.weight(.semibold))
                 Text(error)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 420)
                 HStack {
-                    Button("Tentar novamente") { player.retry() }
+                    Button("Try Again") { player.retry() }
                     if player.queue.count > 1 {
-                        Button("Canal seguinte") { player.next() }
+                        Button("Next Channel") { player.next() }
                     }
                 }
                 .controlSize(.large)
@@ -104,7 +104,7 @@ struct PlayerView: View {
             VStack(spacing: 12) {
                 ProgressView().controlSize(.large).tint(.white)
                 if player.isBuffering, let pct = player.bufferPercent {
-                    Text("A carregar \(pct)%").font(.callout).foregroundStyle(.white.opacity(0.8))
+                    Text("Loading \(pct)%").font(.callout).foregroundStyle(.white.opacity(0.8))
                 }
             }
             .allowsHitTesting(false)
@@ -231,7 +231,7 @@ private struct ControlBar: View {
                 Spacer()
                 if player.queue.count > 1 {
                     Button { player.previous() } label: { Image(systemName: player.isLive ? "chevron.up" : "backward.end.fill") }
-                        .help(player.isLive ? "Canal anterior (↑)" : "Anterior")
+                        .help(player.isLive ? LocalizedStringKey("Previous channel (↑)") : "Previous")
                 }
                 if !player.isLive {
                     Button { player.seek(by: -10) } label: { Image(systemName: "gobackward.10") }
@@ -246,19 +246,19 @@ private struct ControlBar: View {
                 }
                 if player.queue.count > 1 {
                     Button { player.next() } label: { Image(systemName: player.isLive ? "chevron.down" : "forward.end.fill") }
-                        .help(player.isLive ? "Canal seguinte (↓)" : "Seguinte")
+                        .help(player.isLive ? LocalizedStringKey("Next channel (↓)") : "Next")
                 }
                 Spacer()
                 HStack(spacing: 16) {
                     tracksMenu
                     if player.queue.count > 1 {
                         Button { showChannels.toggle() } label: { Image(systemName: "list.bullet") }
-                            .help("Lista (L)")
+                            .help("List (L)")
                     }
                     Button(action: toggleFullScreen) {
                         Image(systemName: isFullScreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                     }
-                    .help(isFullScreen ? "Sair do ecrã inteiro (F)" : "Ecrã inteiro (F)")
+                    .help(isFullScreen ? LocalizedStringKey("Exit full screen (F)") : "Full screen (F)")
                 }
                 .frame(width: 132, alignment: .trailing)
             }
@@ -304,7 +304,7 @@ private struct ControlBar: View {
         HStack(spacing: 12) {
             HStack(spacing: 5) {
                 Circle().fill(.red).frame(width: 7, height: 7)
-                Text("AO VIVO").font(.caption.weight(.heavy))
+                Text("LIVE").font(.caption.weight(.heavy))
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
@@ -322,7 +322,7 @@ private struct ControlBar: View {
                         .progressViewStyle(.linear)
                         .tint(.white)
                     if let next = player.epg.first(where: { $0.start >= now.end }) {
-                        Text("A seguir: \(next.title)")
+                        Text("Up next: \(next.title)")
                             .font(.caption)
                             .foregroundStyle(.white.opacity(0.6))
                             .lineLimit(1)
@@ -337,13 +337,13 @@ private struct ControlBar: View {
     private var tracksMenu: some View {
         Menu {
             if !player.audioTracks.isEmpty {
-                Picker("Áudio", selection: Binding(get: { player.selectedAudio ?? -1 }, set: { player.selectAudio($0) })) {
+                Picker("Audio", selection: Binding(get: { player.selectedAudio ?? -1 }, set: { player.selectAudio($0) })) {
                     ForEach(player.audioTracks) { Text($0.title).tag($0.id) }
                 }
                 .pickerStyle(.inline)
             }
-            Picker("Legendas", selection: Binding(get: { player.selectedSubtitle ?? -1 }, set: { player.selectSubtitle($0 < 0 ? nil : $0) })) {
-                Text("Desligadas").tag(-1)
+            Picker("Subtitles", selection: Binding(get: { player.selectedSubtitle ?? -1 }, set: { player.selectSubtitle($0 < 0 ? nil : $0) })) {
+                Text("Off").tag(-1)
                 ForEach(player.subtitleTracks) { Text($0.title).tag($0.id) }
             }
             .pickerStyle(.inline)
@@ -353,7 +353,7 @@ private struct ControlBar: View {
         .menuStyle(.button)
         .menuIndicator(.hidden)
         .fixedSize()
-        .help("Áudio e legendas")
+        .help("Audio and subtitles")
     }
 
     private func format(_ seconds: Double) -> String {
@@ -375,7 +375,7 @@ private struct ChannelDrawer: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(player.subtitle ?? "Lista").font(.headline).lineLimit(1)
+                Text(player.subtitle ?? String(localized: "List")).font(.headline).lineLimit(1)
                 Spacer()
                 Button(action: close) { Image(systemName: "xmark.circle.fill").font(.title3) }
                     .buttonStyle(.plain)

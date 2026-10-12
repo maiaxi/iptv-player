@@ -35,7 +35,7 @@ struct XtreamClient {
             guard let id = int(s["stream_id"]) else { continue }
             items.append(MediaItem(
                 id: "\(sourceID):live:\(id)",
-                name: string(s["name"]) ?? "Canal \(id)",
+                name: string(s["name"]) ?? String(localized: "Channel \(id)"),
                 logo: url(s["stream_icon"]),
                 categoryID: "live:\(string(s["category_id"]) ?? "")",
                 kind: .live,
@@ -49,7 +49,7 @@ struct XtreamClient {
             guard let id = int(s["stream_id"]) else { continue }
             items.append(MediaItem(
                 id: "\(sourceID):movie:\(id)",
-                name: string(s["name"]) ?? "Filme \(id)",
+                name: string(s["name"]) ?? String(localized: "Movie \(id)"),
                 logo: url(s["stream_icon"]),
                 categoryID: "movie:\(string(s["category_id"]) ?? "")",
                 kind: .movie,
@@ -62,7 +62,7 @@ struct XtreamClient {
             guard let id = int(s["series_id"]) else { continue }
             items.append(MediaItem(
                 id: "\(sourceID):series:\(id)",
-                name: string(s["name"]) ?? "Série \(id)",
+                name: string(s["name"]) ?? String(localized: "Series \(id)"),
                 logo: url(s["cover"]),
                 categoryID: "series:\(string(s["category_id"]) ?? "")",
                 kind: .series,
@@ -84,10 +84,10 @@ struct XtreamClient {
 
     func accountInfo() async throws -> AccountInfo {
         guard let root = try await request(nil) as? JSON, let user = root["user_info"] as? JSON else {
-            throw XtreamError(message: "Resposta inválida do servidor.")
+            throw XtreamError(message: String(localized: "Invalid response from the server."))
         }
         if int(user["auth"]) == 0 {
-            throw XtreamError(message: "Utilizador ou password incorretos.")
+            throw XtreamError(message: String(localized: "Incorrect username or password."))
         }
         let formats = (user["allowed_output_formats"] as? [Any])?.compactMap(string) ?? []
         return AccountInfo(
@@ -102,7 +102,7 @@ struct XtreamClient {
 
     func seriesInfo(seriesID: Int) async throws -> SeriesInfo {
         guard let root = try await request("get_series_info", ["series_id": "\(seriesID)"]) as? JSON else {
-            throw XtreamError(message: "Não foi possível carregar a série.")
+            throw XtreamError(message: String(localized: "Couldn’t load the series."))
         }
         let info = root["info"] as? JSON ?? [:]
         var seasons: [Int: [Episode]] = [:]
@@ -124,7 +124,7 @@ struct XtreamClient {
                     id: id,
                     season: season,
                     number: int(e["episode_num"]) ?? 0,
-                    title: string(e["title"]) ?? "Episódio",
+                    title: string(e["title"]) ?? String(localized: "Episode"),
                     plot: string(epInfo["plot"]),
                     image: url(epInfo["movie_image"]),
                     duration: string(epInfo["duration"]),
@@ -178,13 +178,13 @@ struct XtreamClient {
 
     private func request(_ action: String?, _ params: [String: String] = [:]) async throws -> Any {
         guard var comps = URLComponents(string: "\(base)/player_api.php") else {
-            throw XtreamError(message: "Endereço do servidor inválido.")
+            throw XtreamError(message: String(localized: "Invalid server address."))
         }
         var query = [URLQueryItem(name: "username", value: username), URLQueryItem(name: "password", value: password)]
         if let action { query.append(URLQueryItem(name: "action", value: action)) }
         query += params.map { URLQueryItem(name: $0.key, value: $0.value) }
         comps.queryItems = query
-        guard let url = comps.url else { throw XtreamError(message: "Endereço do servidor inválido.") }
+        guard let url = comps.url else { throw XtreamError(message: String(localized: "Invalid server address.")) }
 
         var req = URLRequest(url: url, timeoutInterval: 60)
         req.setValue(PlayerDefaults.userAgent, forHTTPHeaderField: "User-Agent")
@@ -203,13 +203,13 @@ struct XtreamClient {
             }
             if !(200..<300).contains(status) {
                 throw XtreamError(message: status == 503 || status == 429
-                    ? "O servidor está ocupado (erro \(status)). Tenta novamente daqui a pouco."
-                    : "O servidor respondeu com o erro \(status).")
+                    ? String(localized: "The server is busy (error \(status)). Try again in a moment.")
+                    : String(localized: "The server responded with error \(status)."))
             }
             do {
                 return try JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed])
             } catch {
-                throw XtreamError(message: "O servidor não devolveu dados válidos. Confirma o endereço.")
+                throw XtreamError(message: String(localized: "The server didn’t return valid data. Check the address."))
             }
         }
     }

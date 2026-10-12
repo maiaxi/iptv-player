@@ -1,0 +1,124 @@
+/* Portuguese (Portugal) translation. Keys are the English source strings in the code; a missing
+   key falls back to English. Format specifiers must match: Int → %lld, String → %@, "%" → %%. */
+
+/* Content kinds & library */
+"Live TV" = "TV ao vivo";
+"Movies" = "Filmes";
+"Series" = "Séries";
+"Library" = "Biblioteca";
+"Collections" = "Coleções";
+"Favorites" = "Favoritos";
+"Recents" = "Recentes";
+"All" = "Todos";
+"Categories" = "Categorias";
+"Filter categories" = "Filtrar categorias";
+"Search" = "Pesquisar";
+"Refresh" = "Atualizar";
+"Refresh the library" = "Atualizar a biblioteca";
+"Refresh Library" = "Atualizar biblioteca";
+"1 item" = "1 item";
+"%@ items" = "%@ itens";
+"Uncategorized" = "Sem categoria";
+"Channel %lld" = "Canal %lld";
+"Movie %lld" = "Filme %lld";
+"Series %lld" = "Série %lld";
+"Episode" = "Episódio";
+
+/* Sources */
+"Add Source…" = "Adicionar fonte…";
+"Add Source" = "Adicionar fonte";
+"Edit Source" = "Editar fonte";
+"Manage Sources…" = "Gerir fontes…";
+"Sources" = "Fontes";
+"No source" = "Sem fonte";
+"Loading…" = "A carregar…";
+"Expires %@" = "Expira a %@";
+"Your details are only stored on this Mac." = "Os dados ficam guardados apenas neste Mac.";
+"Type" = "Tipo";
+"M3U Playlist" = "Lista M3U";
+"Name" = "Nome";
+"My TV" = "A minha TV";
+"Playlist" = "Lista";
+"Server" = "Servidor";
+"Username" = "Utilizador";
+"Password" = "Password";
+"The details from your IPTV provider." = "Os dados fornecidos pelo teu fornecedor de IPTV.";
+"Address" = "Endereço";
+"https://… or a local file" = "https://… ou ficheiro local";
+"Choose…" = "Escolher…";
+"If the playlist comes from an Xtream server (get.php?username=…), it’s converted automatically to get movies, series and the programme guide." = "Se a lista vier de um servidor Xtream (get.php?username=…), é convertida automaticamente para ter filmes, séries e guia de programação.";
+"Checking…" = "A verificar…";
+"Cancel" = "Cancelar";
+"Add" = "Adicionar";
+"Save" = "Guardar";
+"Edit" = "Editar";
+"Remove" = "Remover";
+"Done" = "Concluído";
+"Remove “%@”?" = "Remover “%@”?";
+"The server address isn’t valid." = "O endereço do servidor não é válido.";
+
+/* Welcome & empty states */
+"Welcome to IPTV Player" = "Bem-vindo ao IPTV Player";
+"Add an M3U playlist or an Xtream Codes account to start watching TV, movies and series." = "Adiciona uma lista M3U ou uma conta Xtream Codes para começares a ver TV, filmes e séries.";
+"Loading library…" = "A carregar a biblioteca…";
+"Couldn’t load" = "Não foi possível carregar";
+"Try Again" = "Tentar novamente";
+"No Favorites" = "Sem favoritos";
+"Right-click a channel or movie to add it to your favorites." = "Clica com o botão direito num canal ou filme para o adicionar aos favoritos.";
+"Nothing Watched Yet" = "Nada visto recentemente";
+"What you watch shows up here." = "O que vires aparece aqui.";
+"No Content" = "Sem conteúdo";
+"No information" = "Sem informação";
+
+/* Items */
+"Play" = "Reproduzir";
+"Pause" = "Pausa";
+"Add to Favorites" = "Adicionar aos favoritos";
+"Remove from Favorites" = "Remover dos favoritos";
+"Copy Stream Address" = "Copiar endereço do stream";
+
+/* Series */
+"Couldn’t Load the Series" = "Não foi possível carregar a série";
+"In Favorites" = "Nos favoritos";
+"Favorite" = "Favorito";
+"Episodes" = "Episódios";
+"Season" = "Temporada";
+"Season %lld" = "Temporada %lld";
+"This series has no episodes available yet." = "Esta série ainda não tem episódios disponíveis.";
+"S%lld:E%lld · %@" = "T%1$lld:E%2$lld · %3$@";
+
+/* Player */
+"Playback" = "Reprodução";
+"Next Channel" = "Canal seguinte";
+"Previous Channel" = "Canal anterior";
+"Mute" = "Silenciar";
+"Unmute" = "Ativar som";
+"No Signal" = "Sem sinal";
+"Loading %lld%%" = "A carregar %lld%%";
+"Previous channel (↑)" = "Canal anterior (↑)";
+"Next channel (↓)" = "Canal seguinte (↓)";
+"Previous" = "Anterior";
+"Next" = "Seguinte";
+"List (L)" = "Lista (L)";
+"List" = "Lista";
+"Full screen (F)" = "Ecrã inteiro (F)";
+"Exit full screen (F)" = "Sair do ecrã inteiro (F)";
+"LIVE" = "AO VIVO";
+"Up next: %@" = "A seguir: %@";
+"Audio" = "Áudio";
+"Subtitles" = "Legendas";
+"Off" = "Desligadas";
+"Audio and subtitles" = "Áudio e legendas";
+"Track %lld" = "Faixa %lld";
+"This content couldn’t be played (%@)." = "Não foi possível reproduzir este conteúdo (%@).";
+
+/* Errors */
+"Couldn’t download the playlist (error %lld)." = "Não foi possível descarregar a lista (erro %lld).";
+"This file doesn’t look like an M3U playlist." = "O ficheiro não parece ser uma lista M3U.";
+"Invalid response from the server." = "Resposta inválida do servidor.";
+"Incorrect username or password." = "Utilizador ou password incorretos.";
+"Couldn’t load the series." = "Não foi possível carregar a série.";
+"Invalid server address." = "Endereço do servidor inválido.";
+"The server is busy (error %lld). Try again in a moment." = "O servidor está ocupado (erro %lld). Tenta novamente daqui a pouco.";
+"The server responded with error %lld." = "O servidor respondeu com o erro %lld.";
+"The server didn’t return valid data. Check the address." = "O servidor não devolveu dados válidos. Confirma o endereço.";

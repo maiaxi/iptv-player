@@ -17,9 +17,9 @@ struct IPTVPlayerApp: App {
         .defaultSize(width: 1280, height: 800)
         .commands {
             CommandGroup(replacing: .newItem) {
-                Button("Adicionar fonte…") { library.isAddingSource = true }
+                Button("Add Source…") { library.isAddingSource = true }
                     .keyboardShortcut("n")
-                Button("Atualizar biblioteca") { library.refresh() }
+                Button("Refresh Library") { library.refresh() }
                     .keyboardShortcut("r")
                     .disabled(library.selectedSource == nil)
             }
@@ -37,18 +37,18 @@ struct IPTVPlayerApp: App {
         .windowManagerRole(.principal)
         .defaultSize(width: 1280, height: 720)
         .commands {
-            CommandMenu("Reprodução") {
-                Button(player.isPaused ? "Reproduzir" : "Pausa") { player.togglePause() }
+            CommandMenu("Playback") {
+                Button(player.isPaused ? LocalizedStringKey("Play") : "Pause") { player.togglePause() }
                     .disabled(player.current == nil)
                 Divider()
-                Button("Canal seguinte") { player.next() }
+                Button("Next Channel") { player.next() }
                     .keyboardShortcut(.downArrow, modifiers: .command)
                     .disabled(player.queue.count < 2)
-                Button("Canal anterior") { player.previous() }
+                Button("Previous Channel") { player.previous() }
                     .keyboardShortcut(.upArrow, modifiers: .command)
                     .disabled(player.queue.count < 2)
                 Divider()
-                Button(player.isMuted ? "Ativar som" : "Silenciar") { player.toggleMute() }
+                Button(player.isMuted ? LocalizedStringKey("Unmute") : "Mute") { player.toggleMute() }
             }
         }
     }

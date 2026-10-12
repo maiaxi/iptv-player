@@ -19,14 +19,14 @@ struct BrowseView: View {
         }
         .overlay { emptyState(items) }
         .navigationTitle(title)
-        .navigationSubtitle(items.isEmpty ? "" : "\(items.count.formatted()) \(items.count == 1 ? "item" : "itens")")
+        .navigationSubtitle(items.isEmpty ? "" : items.count == 1 ? String(localized: "1 item") : String(localized: "\(items.count.formatted()) items"))
         .toolbar {
             ToolbarItem {
                 if library.isLoading {
                     ProgressView().controlSize(.small)
                 } else {
-                    Button { library.refresh() } label: { Label("Atualizar", systemImage: "arrow.clockwise") }
-                        .help("Atualizar a biblioteca")
+                    Button { library.refresh() } label: { Label("Refresh", systemImage: "arrow.clockwise") }
+                        .help("Refresh the library")
                 }
             }
         }
@@ -36,8 +36,8 @@ struct BrowseView: View {
         if filter == CategoryFilter.all {
             switch sidebar {
             case .kind(let kind): return kind.title
-            case .favorites: return "Favoritos"
-            case .recents: return "Recentes"
+            case .favorites: return String(localized: "Favorites")
+            case .recents: return String(localized: "Recents")
             }
         }
         if let kind = ContentKind(rawValue: filter) { return kind.title }
@@ -55,26 +55,26 @@ struct BrowseView: View {
         } else if library.isLoading && library.library == nil {
             VStack(spacing: 14) {
                 ProgressView().controlSize(.large)
-                Text("A carregar a biblioteca…").foregroundStyle(.secondary)
+                Text("Loading library…").foregroundStyle(.secondary)
             }
         } else if let error = library.loadError, library.library == nil {
             ContentUnavailableView {
-                Label("Não foi possível carregar", systemImage: "wifi.exclamationmark")
+                Label("Couldn’t load", systemImage: "wifi.exclamationmark")
             } description: {
                 Text(error)
             } actions: {
-                Button("Tentar novamente") { library.refresh() }
+                Button("Try Again") { library.refresh() }
             }
         } else if !search.isEmpty {
             ContentUnavailableView.search(text: search)
         } else if sidebar == .favorites {
-            ContentUnavailableView("Sem favoritos", systemImage: "star",
-                                   description: Text("Clica com o botão direito num canal ou filme para o adicionar aos favoritos."))
+            ContentUnavailableView("No Favorites", systemImage: "star",
+                                   description: Text("Right-click a channel or movie to add it to your favorites."))
         } else if sidebar == .recents {
-            ContentUnavailableView("Nada visto recentemente", systemImage: "clock",
-                                   description: Text("O que vires aparece aqui."))
+            ContentUnavailableView("Nothing Watched Yet", systemImage: "clock",
+                                   description: Text("What you watch shows up here."))
         } else {
-            ContentUnavailableView("Sem conteúdo", systemImage: "tray")
+            ContentUnavailableView("No Content", systemImage: "tray")
         }
     }
 }
@@ -101,14 +101,14 @@ struct MediaCard: View {
         .onHover { hovering = $0 }
         .contextMenu {
             if item.isPlayable {
-                Button("Reproduzir") { play() }
+                Button("Play") { play() }
             }
-            Button(library.isFavorite(item) ? "Remover dos favoritos" : "Adicionar aos favoritos") {
+            Button(library.isFavorite(item) ? LocalizedStringKey("Remove from Favorites") : "Add to Favorites") {
                 library.toggleFavorite(item)
             }
             if let url = item.streamURL {
                 Divider()
-                Button("Copiar endereço do stream") {
+                Button("Copy Stream Address") {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(url.absoluteString, forType: .string)
                 }
@@ -223,7 +223,7 @@ struct NowPlayingLine: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(program?.title ?? "Sem informação")
+            Text(program?.title ?? String(localized: "No information"))
                 .font(.caption)
                 .foregroundStyle(program == nil ? .tertiary : .secondary)
                 .lineLimit(1)
