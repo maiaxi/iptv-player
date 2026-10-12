@@ -64,7 +64,8 @@ jobs:
           echo "Architectures: $ARCHS_FOUND"
           [[ "$ARCHS_FOUND" == *arm64* && "$ARCHS_FOUND" == *x86_64* ]]
           # Only system libraries may be linked dynamically, or the app won't run on other Macs.
-          if otool -L "$BIN" | tail -n +2 | grep -vE "^\s+(/System/Library|/usr/lib)/"; then
+          # Library lines are indented; the unindented ones are per-architecture headers.
+          if otool -L "$BIN" | grep -E "^\s" | grep -vE "^\s+(/System/Library|/usr/lib)/"; then
             echo "Unexpected non-system dylib dependency" >&2
             exit 1
           fi
