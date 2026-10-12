@@ -1,0 +1,8 @@
+{
+    // With only the Command Line Tools, the macOS 27 SDK can't compile SwiftUI (@State's macro
+    // plugin ships with full Xcode). Build and index against the macOS 26 SDK, like build-app.sh.
+    "swift.SDK": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk",
+    "swift.swiftEnvironmentVariables": {
+        "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk"
+    }
+}
