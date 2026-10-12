@@ -63,19 +63,36 @@ jobs:
           ARCHS_FOUND=$(lipo -archs "$BIN")
           echo "Architectures: $ARCHS_FOUND"
           [[ "$ARCHS_FOUND" == *arm64* && "$ARCHS_FOUND" == *x86_64* ]]
-          # Only system libraries may be linked dynamically, or the app won't run on other Macs.
-          # Library lines are indented; the unindented ones are per-architecture headers.
-          if otool -L "$BIN" | grep -E "^\s" | grep -vE "^\s+(/System/Library|/usr/lib)/"; then
+          # Only system libraries and the embedded Sparkle may be linked dynamically, or the app
+          # won't run on other Macs. Library lines are indented; the others are arch headers.
+          if otool -L "$BIN" | grep -E "^\s" | grep -vE "^\s+(/System/Library|/usr/lib)/|@rpath/Sparkle\.framework/"; then
             echo "Unexpected non-system dylib dependency" >&2
             exit 1
           fi
           otool -l "$BIN" | grep -A3 LC_BUILD_VERSION | grep minos | sort -u
+          test -d "build/IPTV Player.app/Contents/Frameworks/Sparkle.framework"
+          codesign --verify --deep "build/IPTV Player.app"
 
       - uses: actions/upload-artifact@v4
         with:
           name: IPTV-Player-${{ steps.version.outputs.version }}
           path: build/IPTV-Player-*.dmg
           if-no-files-found: error
+
+      # The app reads releases/latest/download/appcast.xml, so every release carries its own feed
+      # pointing at its DMG, signed with the Sparkle EdDSA key.
+      - name: Sign update and write appcast
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          DMG=$(ls build/IPTV-Player-*.dmg)
+          KEY_FILE="$RUNNER_TEMP/sparkle_key"
+          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" > "$KEY_FILE"
+          trap 'rm -f "$KEY_FILE"' EXIT
+          SPARKLE_KEY_FILE="$KEY_FILE" ./scripts/make-appcast.sh "$DMG" \
+            "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/$(basename "$DMG")"
 
       - name: Publish to release
         if: startsWith(github.ref, 'refs/tags/v')
@@ -85,7 +102,7 @@ jobs:
         run: |
           DMG=$(ls build/IPTV-Player-*.dmg)
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$DMG" --clobber
+            gh release upload "$TAG" "$DMG" build/appcast.xml --clobber
           else
-            gh release create "$TAG" "$DMG" --title "IPTV Player ${TAG#v}" --generate-notes
+            gh release create "$TAG" "$DMG" build/appcast.xml --title "IPTV Player ${TAG#v}" --generate-notes
           fi

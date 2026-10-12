@@ -122,3 +122,6 @@
 "The server is busy (error %lld). Try again in a moment." = "O servidor está ocupado (erro %lld). Tenta novamente daqui a pouco.";
 "The server responded with error %lld." = "O servidor respondeu com o erro %lld.";
 "The server didn’t return valid data. Check the address." = "O servidor não devolveu dados válidos. Confirma o endereço.";
+
+/* Updates */
+"Check for Updates…" = "Procurar atualizações…";

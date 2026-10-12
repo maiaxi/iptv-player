@@ -49,6 +49,18 @@ git tag v1.2.3 && git push origin v1.2.3
 The workflow builds the app as version 1.2.3 and attaches the DMG to the `v1.2.3` release, creating
 it if needed.
 
+### Auto-updates
+
+The app updates itself with [Sparkle](https://sparkle-project.org): it checks
+`releases/latest/download/appcast.xml` once a day, and **IPTV Player → Check for Updates…** checks
+right away. The release workflow signs each DMG and writes that `appcast.xml` with
+`scripts/make-appcast.sh`.
+
+Updates are signed with an EdDSA key. The public half is `SUPublicEDKey` in `Resources/Info.plist`;
+the private half is the `SPARKLE_ED_PRIVATE_KEY` repository secret, with a copy in the maintainer's
+login keychain (account `dev.maiaxi.iptvplayer`). If the private key is lost, installed copies can't
+verify new updates any more, so keep that keychain item backed up.
+
 ## Player shortcuts
 
 | Key | Action |

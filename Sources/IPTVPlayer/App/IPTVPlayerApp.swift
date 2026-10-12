@@ -16,6 +16,9 @@ struct IPTVPlayerApp: App {
         }
         .defaultSize(width: 1280, height: 800)
         .commands {
+            CommandGroup(after: .appInfo) {
+                CheckForUpdatesButton()
+            }
             CommandGroup(replacing: .newItem) {
                 Button("Add Source…") { library.isAddingSource = true }
                     .keyboardShortcut("n")
@@ -58,6 +61,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate()
+        MainActor.assumeIsolated { _ = Updater.shared }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
