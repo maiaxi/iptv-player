@@ -14,7 +14,7 @@ Download the `.dmg` from [Releases](../../releases), drag **IPTV Player** into A
 allow it once in System Settings → Privacy & Security → **Open Anyway** (the app isn't signed by
 Apple).
 
-Requires Apple silicon and macOS 15 or later.
+Runs on Apple silicon and Intel Macs with macOS 15 or later.
 
 ## Build
 
@@ -33,6 +33,21 @@ full Xcode for SwiftUI's macros.
 
 `IPTV_AUTOPLAY=<url> .build/debug/IPTVPlayer` opens the player straight away with that stream (debug
 builds only).
+
+Local builds target this Mac's architecture. With full Xcode, `ARCHS="arm64 x86_64" ./scripts/make-dmg.sh`
+builds a universal app; `VERSION` and `BUILD_NUMBER` override the version in `Info.plist`.
+
+## Releases
+
+GitHub Actions builds a universal DMG on every push to `main` and every pull request (kept as a
+workflow artifact). To publish a release, push a version tag:
+
+```sh
+git tag v1.2.3 && git push origin v1.2.3
+```
+
+The workflow builds the app as version 1.2.3 and attaches the DMG to the `v1.2.3` release, creating
+it if needed.
 
 ## Player shortcuts
 
@@ -55,7 +70,7 @@ add a new `.lproj` and list it under `CFBundleLocalizations` in `Resources/Info.
 
 ## Notes
 
-- No Intel build: the Swift toolchain in the macOS 27 Command Line Tools no longer ships the x86_64
-  runtime.
+- Intel builds need full Xcode (the Swift toolchain in the macOS 27 Command Line Tools no longer
+  ships the x86_64 runtime), so universal builds come from GitHub Actions.
 - Sources (including passwords) are stored in `~/Library/Application Support/IPTVPlayer/sources.json`,
   readable only by the current user. The library is cached for 12 h (⌘R refreshes).

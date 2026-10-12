@@ -21,7 +21,7 @@ cat > "$STAGING/How to open.txt" <<'EOF'
 3. Go to System Settings → Privacy & Security, scroll to the bottom and click "Open Anyway".
 4. Confirm. From then on it opens normally.
 
-Requires a Mac with Apple silicon (M1 or later) and macOS 15 or later.
+Requires macOS 15 or later (Apple silicon or Intel).
 EOF
 
 hdiutil create -volname "IPTV Player" -srcfolder "$STAGING" -ov -format UDZO -quiet "$DMG"
