@@ -47,6 +47,13 @@ if [[ -n "${BUILD_NUMBER:-}" ]]; then
     /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP/Contents/Info.plist"
 fi
 
+# Sparkle is a dynamic framework; the binary looks for it in Contents/Frameworks (see the rpath in
+# Package.swift). The xcframework's macOS slice is universal, so it suits any ARCHS. It keeps
+# Sparkle's own signature.
+SPARKLE=$(/bin/ls -d "$ROOT"/.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-*/Sparkle.framework | head -1)
+mkdir -p "$APP/Contents/Frameworks"
+ditto "$SPARKLE" "$APP/Contents/Frameworks/Sparkle.framework"
+
 # Translations. English is the source language (the strings in code), so en.lproj only needs to
 # exist for macOS to pick English; other languages carry a Localizable.strings.
 mkdir -p "$APP/Contents/Resources/en.lproj"
